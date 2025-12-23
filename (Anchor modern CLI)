@@ -1,0 +1,22 @@
+# 1. Make sure you have the latest tools (as of Dec 2025)
+cargo install --git https://github.com/coral-xyz/anchor anchor-cli --locked --force
+# or just use npm if you prefer (newer way)
+npm install -g @solana-program/create
+
+# 2. Create project + git repo in one go (recommended!)
+pnpm create solana-program my-cool-solana-app counter
+# or with npm
+npx @solana-program/create@latest my-cool-solana-app counter
+
+# 3. Go inside & push to GitHub
+cd my-cool-solana-app
+git init
+git add .
+git commit -m "Initial commit: Solana Anchor counter program"
+
+# Create repo on GitHub (via browser or gh cli)
+gh repo create --public --source=. --remote=origin
+# or manually: https://github.com/new → create repo → copy url
+
+git branch -M main
+git push -u origin main
