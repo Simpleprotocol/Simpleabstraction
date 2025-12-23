@@ -1,0 +1,15 @@
+# Create folder & init git
+mkdir solana-native-hello && cd solana-native-hello
+git init
+
+# Create basic structure
+cargo init --lib programs/hello
+cd programs/hello
+
+# Update Cargo.toml
+# Add these under [dependencies]
+solana-program = "2.1"           # check latest version on crates.io
+borsh = "1.5"
+borsh-derive = "1.5"
+
+# src/lib.rs - minimal hello world program
