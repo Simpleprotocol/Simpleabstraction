@@ -1,0 +1,13 @@
+# Create project
+anchor init my-solana-counter
+
+# Enter & prepare git
+cd my-solana-counter
+git init
+git add .
+git commit -m "feat: initial Anchor Solana program"
+
+# Create empty repo on GitHub and push
+git remote add origin https://github.com/yourusername/my-solana-counter.git
+git branch -M main
+git push -u origin main
