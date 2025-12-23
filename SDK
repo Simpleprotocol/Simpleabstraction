@@ -1,0 +1,120 @@
+Here are the **most common and recommended ways** in late 2025 to create a clean GitHub repository for a **Solana** project using the official SDKs (mostly **Anchor** which is still the #1 choice for 90%+ of developers).
+
+### Option 1: Quickest & Recommended (Anchor + Modern CLI) — 1 minute setup
+
+```bash
+# 1. Make sure you have the latest tools (as of Dec 2025)
+cargo install --git https://github.com/coral-xyz/anchor anchor-cli --locked --force
+# or just use npm if you prefer (newer way)
+npm install -g @solana-program/create
+
+# 2. Create project + git repo in one go (recommended!)
+pnpm create solana-program my-cool-solana-app counter
+# or with npm
+npx @solana-program/create@latest my-cool-solana-app counter
+
+# 3. Go inside & push to GitHub
+cd my-cool-solana-app
+git init
+git add .
+git commit -m "Initial commit: Solana Anchor counter program"
+
+# Create repo on GitHub (via browser or gh cli)
+gh repo create --public --source=. --remote=origin
+# or manually: https://github.com/new → create repo → copy url
+
+git branch -M main
+git push -u origin main
+```
+
+This creates a modern project structure with:
+
+```
+my-cool-solana-app/
+├── programs/
+│   └── counter/
+│       ├── src/
+│       │   └── lib.rs           ← your program logic
+│       └── Cargo.toml
+├── Anchor.toml                      ← config
+├── Cargo.toml                       ← workspace
+├── package.json                     ← for TS tests/client
+├── ts/
+│   └── tests/                       ← mocha + @coral-xyz/anchor tests
+└── .gitignore
+```
+
+### Option 2: Classic Anchor Way (still very popular)
+
+```bash
+# Create project
+anchor init my-solana-counter
+
+# Enter & prepare git
+cd my-solana-counter
+git init
+git add .
+git commit -m "feat: initial Anchor Solana program"
+
+# Create empty repo on GitHub and push
+git remote add origin https://github.com/yourusername/my-solana-counter.git
+git branch -M main
+git push -u origin main
+```
+
+### Option 3: Native Rust (no Anchor) — when you want maximum control / minimal dependencies
+
+```bash
+# Create folder & init git
+mkdir solana-native-hello && cd solana-native-hello
+git init
+
+# Create basic structure
+cargo init --lib programs/hello
+cd programs/hello
+
+# Update Cargo.toml
+# Add these under [dependencies]
+solana-program = "2.1"           # check latest version on crates.io
+borsh = "1.5"
+borsh-derive = "1.5"
+
+# src/lib.rs - minimal hello world program
+```
+
+```rust
+use solana_program::{
+    account_info::AccountInfo,
+    entrypoint,
+    entrypoint::ProgramResult,
+    msg,
+    pubkey::Pubkey,
+};
+
+entrypoint!(process_instruction);
+
+pub fn process_instruction(
+    _program_id: &Pubkey,
+    _accounts: &[AccountInfo],
+    _instruction_data: &[u8],
+) -> ProgramResult {
+    msg!("Hello Solana! (native Rust program)");
+    Ok(())
+}
+```
+
+Then commit & push as usual.
+
+### Quick Recommendation Table (Dec 2025)
+
+| Style                 | Speed to start | Best for                          | GitHub Popularity | Recommended?     |
+|-----------------------|----------------|-----------------------------------|-------------------|------------------|
+| `pnpm create solana-program` | ★★★★★         | New projects, modern stack        | Very high         | **Yes #1**      |
+| `anchor init`         | ★★★★          | Classic Anchor users              | Still very high   | Yes             |
+| Native Rust           | ★★            | Learning, minimal deps, performance | Medium            | Only if needed  |
+| Steel / other frameworks | ★★★         | Experimental / specific needs     | Low               | No (for most)   |
+
+Pick **Option 1** if you're starting fresh — it's the cleanest and most up-to-date way right now.
+
+Good luck with your Solana project! 🚀  
+Feel free to share what kind of program you're building (counter, token, NFT, AMM, game, ...) and I can give you more specific boilerplate code!
