@@ -1,0 +1,12 @@
+my-cool-solana-app/
+├── programs/
+│   └── counter/
+│       ├── src/
+│       │   └── lib.rs           ← your program logic
+│       └── Cargo.toml
+├── Anchor.toml                      ← config
+├── Cargo.toml                       ← workspace
+├── package.json                     ← for TS tests/client
+├── ts/
+│   └── tests/                       ← mocha + @coral-xyz/anchor tests
+└── .gitignore
