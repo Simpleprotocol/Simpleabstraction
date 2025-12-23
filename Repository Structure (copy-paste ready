@@ -1,0 +1,112 @@
+chain-abstraction-starter/
+├── contracts/
+│   ├── src/
+│   │   ├── ChainAbstractedWallet.sol      ← Main smart contract wallet
+│   │   ├── ICrossChainExecutor.sol        ← Interface for cross-chain calls
+│   │   └── MockCrossChainBridge.sol       ← Simple mock for local testing
+│   └── test/
+│       └── ChainAbstractedWallet.t.sol    ← Foundry test
+├── script/
+│   └── Deploy.s.sol                       ← Deployment script
+├── foundry.toml
+├── .gitignore
+├── README.md
+└── remappings.txt                         (optional - for foundry)// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+/**
+ * @title ICrossChainExecutor
+ * @notice Standard interface that chain-abstracted contracts may implement
+ */
+interface ICrossChainExecutor {
+    function executeCrossChain(
+        uint256 targetChainId,
+        address target,
+        bytes calldata data,
+        uint256 value
+    ) external payable;
+}// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
+/**
+ * @title ChainAbstractedWallet
+ * @notice Minimal chain-abstracted smart contract wallet example
+ * Supports:
+ *  - Owner-based signature validation
+ *  - Cross-chain call execution (mocked bridge)
+ *  - Future extension points for real chain abstraction (NEAR-style MPC, LayerZero, CCIP)
+ */
+contract ChainAbstractedWallet is Ownable {
+    using ECDSA for bytes32;
+
+    event CrossChainCallExecuted(
+        uint256 targetChainId,
+        address targetContract,
+        bytes data,
+        uint256 value
+    );
+
+    constructor(address initialOwner) Ownable(initialOwner) {}
+
+    // Basic signature validation (can be extended with ERC-4337 validateUserOp)
+    function execute(
+        address to,
+        uint256 value,
+        bytes calldata data
+    ) external payable onlyOwner {
+        (bool success, ) = to.call{value: value}(data);
+        require(success, "Execution failed");
+    }
+
+    /**
+     * @dev Mock cross-chain execution
+     * In real world: use LayerZero, Chainlink CCIP, Wormhole, or NEAR Chain Signatures
+     */
+    function executeCrossChain(
+        uint256 targetChainId,
+        address targetContract,
+        bytes calldata data,
+        uint256 value
+    ) external payable onlyOwner {
+        // In real implementation this would emit event / call bridge
+        // Here we just log it (for demo purposes)
+        emit CrossChainCallExecuted(targetChainId, targetContract, data, value);
+    }
+
+    // Receive ETH
+    receive() external payable {}
+}[profile.default]
+src = 'contracts/src'
+out = 'out'
+libs = ['node_modules', 'lib']
+test = 'contracts/test'
+cache_path = 'forge-cache'
+solc_version = '0.8.24'
+auto_detect_solc = false
+
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"
+]# Chain Abstraction Starter Kit
+
+Minimal example of **chain abstraction** concepts using Solidity + Foundry
+
+## Features
+- Basic smart contract wallet (chain-abstracted)
+- Cross-chain call interface (mocked - ready for real bridges)
+- Owner-based execution
+- Easy to extend with real chain abstraction solutions:
+  - ERC-4337 (EntryPoint + UserOperation)
+  - LayerZero / Chainlink CCIP
+  - NEAR Chain Signatures (MPC based)
+
+## Quick Start
+
+1. Install Foundry
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+foundryupgit clone https://github.com/YOUR_USERNAME/chain-abstraction-starter.git
+cd chain-abstraction-starter
+forge install OpenZeppelin/openzeppelin-contractsforge script script/Deploy.s.sol:Deploy --rpc-url $SEPOLIA_RPC_URL --broadcast --verify -vvvv
